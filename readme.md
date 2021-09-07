@@ -1,3 +1,6 @@
+# Heavy Armed Dwarf
+Is an attempt on controlling a very heavy weapon and play around with skeletal deform of sprites and IK.
+![als text](doc/combined.png)
 
 # How it works
 ## Physics
