@@ -88,12 +88,12 @@ func _draw():
     pass
 "
 
-[sub_resource type="PhysicsMaterial" id=7]
+[sub_resource type="PhysicsMaterial" id=5]
 rough = true
 bounce = 1.0
 absorbent = true
 
-[sub_resource type="CircleShape2D" id=5]
+[sub_resource type="CircleShape2D" id=6]
 radius = 70.342
 
 [node name="Node2D" type="Node2D"]
@@ -252,6 +252,7 @@ script = SubResource( 4 )
 [node name="Bone2DLeftShoulder" type="Bone2D" parent="Player/RigidBody/Skeleton2D"]
 position = Vector2( 0.629944, -0.629944 )
 rotation = -1.71078
+scale = Vector2( 1, 1 )
 rest = Transform2D( -0.139527, -0.990218, 0.990218, -0.139527, 0.629944, -0.629944 )
 
 [node name="Bone2DLeftArm" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2DLeftShoulder"]
@@ -261,6 +262,7 @@ rest = Transform2D( 1, 0, 0, 1, 47.8154, 40.4609 )
 [node name="Bone2DLeftLowerArm" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2DLeftShoulder/Bone2DLeftArm"]
 position = Vector2( -67.3845, 66.197 )
 rotation = 3.00197
+scale = Vector2( 1, 1 )
 rest = Transform2D( -0.990269, 0.139169, -0.139169, -0.990269, -67.3845, 66.197 )
 
 [node name="Position2DLeft" type="Position2D" parent="Player/RigidBody/Skeleton2D/Bone2DLeftShoulder/Bone2DLeftArm/Bone2DLeftLowerArm"]
@@ -279,6 +281,7 @@ rest = Transform2D( 1, 0, 0, 1, 0, 0 )
 [node name="Bone2DRightArm" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2D2RightShoulder"]
 position = Vector2( -49.8924, -33.8477 )
 rotation = 0.720062
+scale = Vector2( 1, 1 )
 rest = Transform2D( 0.751765, 0.659431, -0.659431, 0.751765, -49.8924, -33.8477 )
 __meta__ = {
 "_edit_bone_": true
@@ -287,6 +290,7 @@ __meta__ = {
 [node name="Bone2DRightLowerArm" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2D2RightShoulder/Bone2DRightArm"]
 position = Vector2( 11.2833, 94.8271 )
 rotation = -1.29245
+scale = Vector2( 1, 1 )
 rest = Transform2D( 0.274766, -0.961511, 0.961511, 0.274766, 11.2833, 94.8271 )
 __meta__ = {
 "_edit_bone_": true
@@ -299,6 +303,7 @@ rotation = -1.49012e-08
 [node name="Bone2DRightHand" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2D2RightShoulder/Bone2DRightArm/Bone2DRightLowerArm"]
 position = Vector2( 36.8972, 71.3041 )
 rotation = 0.572388
+scale = Vector2( 1, 1 )
 rest = Transform2D( 0.84061, 0.541641, -0.541641, 0.84061, 36.8972, 71.3041 )
 __meta__ = {
 "_edit_bone_": true
@@ -307,7 +312,7 @@ __meta__ = {
 [node name="Spear" type="RigidBody2D" parent="Player"]
 position = Vector2( 85.6421, 31.1731 )
 rotation = -1.5708
-physics_material_override = SubResource( 7 )
+physics_material_override = SubResource( 5 )
 linear_damp = 3.682
 angular_damp = 36.458
 
@@ -375,7 +380,7 @@ rotation = 0.822645
 angular_damp = 20.991
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
-shape = SubResource( 5 )
+shape = SubResource( 6 )
 
 [node name="Sprite" type="Sprite" parent="RigidBody2D"]
 position = Vector2( 0, 30.2905 )
@@ -384,11 +389,10 @@ texture = ExtResource( 5 )
 [node name="RigidBody2D2" type="RigidBody2D" parent="."]
 position = Vector2( 664.692, -345.986 )
 rotation = 1.64529
-scale = Vector2( 1, 1 )
 angular_damp = 20.991
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D2"]
-shape = SubResource( 5 )
+shape = SubResource( 6 )
 
 [node name="Sprite" type="Sprite" parent="RigidBody2D2"]
 position = Vector2( 0, 30.2905 )
