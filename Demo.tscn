@@ -1,0 +1,395 @@
+[gd_scene load_steps=12 format=2]
+
+[ext_resource path="res://assets/max_nolegs_big.png" type="Texture" id=1]
+[ext_resource path="res://InverseKinematic.gd" type="Script" id=2]
+[ext_resource path="res://assets/gso9pxdx8ik31.png" type="Texture" id=3]
+[ext_resource path="res://assets/gso9pxdx8ik31_trees.png" type="Texture" id=4]
+[ext_resource path="res://assets/goblin.png" type="Texture" id=5]
+
+[sub_resource type="CircleShape2D" id=1]
+radius = 44.5663
+
+[sub_resource type="GDScript" id=2]
+script/source = "extends Node
+
+export (int) var speed = 500
+
+var velocity = Vector2()
+var jab := 0
+var leap = false
+var target_dir := Vector2(1,0)
+var dir
+var turn = 0.0
+
+func _ready():
+    dir = Vector2(cos($RigidBody.rotation), sin($RigidBody.rotation))
+    Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+func _input(event):
+   # Mouse in viewport coordinates.
+    if event is InputEventMouseButton:
+        print(\"Mouse Click/Unclick at: \", event.position)
+    elif event is InputEventMouseMotion:
+        turn += event.relative.x
+
+func get_input():
+    velocity = Vector2()
+    leap = false
+    if Input.is_action_pressed(\"right\"):
+        velocity.x += 1
+    if Input.is_action_pressed(\"left\"):
+        velocity.x -= 1
+    if Input.is_action_pressed(\"down\"):
+        velocity.y += 1
+    if Input.is_action_pressed(\"up\"):
+        velocity.y -= 1
+    if Input.is_mouse_button_pressed(BUTTON_LEFT):
+        jab += 1
+    else:
+        jab = 0
+
+    target_dir = velocity.normalized()
+    velocity = target_dir * speed
+    
+    velocity = velocity.rotated($RigidBody.rotation)
+
+func _physics_process(delta):
+    get_input()
+    $RigidBody.apply_torque_impulse(clamp(turn,-25,25) * $RigidBody.mass * 1000)
+    $RigidBody.apply_central_impulse(velocity * $RigidBody.mass / 10)
+    $Spear.position +=  (velocity * delta / 2).project(Vector2(0,1).rotated($RigidBody.rotation))
+    turn = 0
+    
+    $RigidBody/Skeleton2D/Bone2D2RightShoulder/Bone2DRightArm.apply_rest()
+    $RigidBody/Skeleton2D/Bone2DLeftShoulder/Bone2DLeftArm.apply_rest()
+    $InverseKinematicLeftArm.cycle($Spear/RemoteTransformLeftHand.global_position)
+    $InverseKinematicRightArm.cycle($Spear/RemoteTransformRightHand.global_position)
+
+    if jab == 1:
+        $Spear.apply_impulse(Vector2(0,0), dir * 1000)
+"
+
+[sub_resource type="CircleShape2D" id=3]
+radius = 52.8716
+
+[sub_resource type="GDScript" id=4]
+script/source = "extends Skeleton2D
+
+func _draw_bones(node : Node2D, parent : Node2D):
+    if node as Bone2D:
+        draw_line(node.position, parent.position, Color(1,1,0,0.5),3.0) 
+
+    for child in node.get_children():
+        if child as Node2D:
+            _draw_bones(child, node)
+            
+func _draw():
+    #_draw_bones(self, null)
+    pass
+"
+
+[sub_resource type="PhysicsMaterial" id=7]
+rough = true
+bounce = 1.0
+absorbent = true
+
+[sub_resource type="CircleShape2D" id=5]
+radius = 70.342
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Node2D" type="Node2D" parent="."]
+position = Vector2( 1576.36, 472.252 )
+scale = Vector2( 1.2, 1.2 )
+
+[node name="Sprite" type="Sprite" parent="Node2D"]
+position = Vector2( -1119.11, -582.935 )
+rotation = -1.57079
+scale = Vector2( 1.78023, 1.82584 )
+texture = ExtResource( 3 )
+offset = Vector2( -195.799, 136.34 )
+
+[node name="Sprite2" type="Sprite" parent="Node2D"]
+position = Vector2( -870.177, -234.367 )
+rotation = -1.57079
+scale = Vector2( 1.78023, 1.82584 )
+z_index = 1
+texture = ExtResource( 4 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Node2D"]
+
+[node name="TreeTrunk" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -534.896, -206.766 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk2" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -711.696, -468.97 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk3" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1194.15, -91.3968 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk4" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -840.55, 124.36 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk5" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -524.407, 140.841 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk6" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -241.227, -573.852 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk7" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1112.26, -416.707 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk8" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1141.03, -776.977 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk9" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1475.52, -785.957 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk10" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1477.76, 338.75 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Node2D/StaticBody2D"]
+polygon = PoolVector2Array( -1978.37, -1021.13, -1927.97, -1210.12, -2127.04, -1159.72, -2144.68, -1074.05, -2089.24, -1031.21 )
+
+[node name="TreeTrunk11" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1585.67, -75.7346 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk12" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -2006.48, 269.484 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk13" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1958.61, -811.529 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk14" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -2213.11, -383.155 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk15" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1432.92, 769.658 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk16" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1044.49, 445.371 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk17" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -528.161, -763.507 )
+rotation = 2.26418
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk18" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -979.391, -1062.08 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk19" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1697.94, -1222.35 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="TreeTrunk20" type="CollisionShape2D" parent="Node2D/StaticBody2D"]
+position = Vector2( -1288.85, -1350.78 )
+z_index = 2
+shape = SubResource( 1 )
+
+[node name="Player" type="Node" parent="."]
+script = SubResource( 2 )
+
+[node name="RigidBody" type="RigidBody2D" parent="Player"]
+linear_damp = 9.033
+angular_damp = 4.351
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/RigidBody"]
+shape = SubResource( 3 )
+
+[node name="Node2D" type="Node2D" parent="Player/RigidBody"]
+
+[node name="Max" type="Polygon2D" parent="Player/RigidBody/Node2D"]
+position = Vector2( 49.6047, 123.14 )
+rotation = -2.49757
+texture = ExtResource( 1 )
+skeleton = NodePath("../../Skeleton2D")
+polygon = PoolVector2Array( 279.882, 408.284, 244.379, 312.426, 136.364, 194.737, 131.579, 176.077, 155.172, 165.517, 178.601, 144.666, 179.665, 132.432, 179.665, 113.815, 180.196, 103.708, 182.856, 88.2831, 184.452, 75.5171, 181.792, 61.6873, 172.75, 47.3256, 146.686, 17.5384, 125.941, 5.30433, 113.707, 1.04903, 77.7108, 2.74992, 46.0726, 10.0946, 29.1235, 15.4618, 14.1066, 44.5141, 15.3605, 74.6081, 9.71788, 95.6113, 27.2727, 121.944, 38.8715, 123.511, 77.5119, 196.651, 194.083, 355.621, 53.5718, 98.6011, 45.1082, 77.9111, 52.9448, 55.341, 75.5158, 46.2501, 69.8728, 56.2814, 72.0678, 72.8961, 84.6068, 98.9151, 116.928, 121.317, 138.558, 109.404, 140.406, 124.306, 127.867, 134.651, 109.372, 151.579, 91.1898, 159.73, 49.1835, 108.946, 129.781, 110.345, 149.184, 73.2091, 153.259, 54.4005, 147.616, 35.2783, 84.9198, 33.7109, 91.8168, 17.41, 108.431, 10.1999, 120.97, 10.1999, 136.958, 18.9774, 156.08, 139.04 )
+uv = PoolVector2Array( 274.641, 402.392, 244.498, 310.526, 136.237, 196.167, 131.278, 174.144, 175.61, 150.174, 181.533, 133.449, 183.275, 121.603, 181.882, 111.847, 182.578, 99.3031, 183.315, 88.7729, 184.911, 76.0069, 182.251, 62.1771, 173.209, 47.8154, 147.145, 18.0282, 126.4, 5.79413, 114.166, 1.53883, 96.1673, 2.78746, 68.9895, 5.92334, 36.08, 14.8216, 13.5889, 45.993, 14.9826, 76.6551, 10.453, 98.9547, 26.1324, 121.603, 37.9791, 122.648, 77.7003, 192.335, 192.823, 357.895, 56.0976, 98.9547, 45.5676, 78.4009, 66.8712, 48.72, 75.9752, 46.7399, 70.3322, 56.7712, 72.5272, 73.3859, 85.0662, 99.4049, 114.533, 116.959, 140.865, 109.749, 140.865, 124.796, 126.829, 134.843, 107.666, 150.523, 91.6492, 160.22, 52.2648, 110.105, 125.436, 111.15, 149.643, 73.6989, 153.718, 54.8903, 148.075, 35.7681, 85.3792, 34.2007, 92.2762, 17.8998, 108.89, 10.6897, 121.429, 10.6897, 137.417, 19.4672, 162.633, 130.076 )
+polygons = [ PoolIntArray( 0, 1, 2, 3, 37, 38, 39, 26, 27, 20, 21, 22, 23, 24, 25 ), PoolIntArray( 3, 4, 5, 49, 35, 36, 37 ), PoolIntArray( 27, 28, 18, 19, 20 ), PoolIntArray( 18, 17, 16, 15, 46, 45, 44, 29, 30, 28 ), PoolIntArray( 5, 6, 7, 8, 9, 10, 11, 12, 42, 41, 40, 34, 35, 49 ), PoolIntArray( 12, 13, 14, 15, 46, 47, 48, 43, 42 ), PoolIntArray( 33, 40, 41, 42, 43, 48, 47, 46, 45, 44, 29, 30, 31, 32 ) ]
+bones = [ NodePath("Bone2DLeftShoulder"), PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 ), NodePath("Bone2DLeftShoulder/Bone2DLeftArm"), PoolRealArray( 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1 ), NodePath("Bone2DLeftShoulder/Bone2DLeftArm/Bone2DLeftLowerArm"), PoolRealArray( 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1 ), NodePath("Bone2DLeftShoulder/Bone2DLeftArm/Bone2DLeftLowerArm/Bone2DLeftHand"), PoolRealArray( 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ), NodePath("Bone2D2RightShoulder"), PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0 ), NodePath("Bone2D2RightShoulder/Bone2DRightArm"), PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0 ), NodePath("Bone2D2RightShoulder/Bone2DRightArm/Bone2DRightLowerArm"), PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ), NodePath("Bone2D2RightShoulder/Bone2DRightArm/Bone2DRightLowerArm/Bone2DRightHand"), PoolRealArray( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ) ]
+internal_vertex_count = 24
+
+[node name="Skeleton2D" type="Skeleton2D" parent="Player/RigidBody"]
+rotation = -1.5708
+script = SubResource( 4 )
+
+[node name="Bone2DLeftShoulder" type="Bone2D" parent="Player/RigidBody/Skeleton2D"]
+position = Vector2( 0.629944, -0.629944 )
+rotation = -1.71078
+rest = Transform2D( -0.139527, -0.990218, 0.990218, -0.139527, 0.629944, -0.629944 )
+
+[node name="Bone2DLeftArm" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2DLeftShoulder"]
+position = Vector2( 47.8154, 40.4609 )
+rest = Transform2D( 1, 0, 0, 1, 47.8154, 40.4609 )
+
+[node name="Bone2DLeftLowerArm" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2DLeftShoulder/Bone2DLeftArm"]
+position = Vector2( -67.3845, 66.197 )
+rotation = 3.00197
+rest = Transform2D( -0.990269, 0.139169, -0.139169, -0.990269, -67.3845, 66.197 )
+
+[node name="Position2DLeft" type="Position2D" parent="Player/RigidBody/Skeleton2D/Bone2DLeftShoulder/Bone2DLeftArm/Bone2DLeftLowerArm"]
+position = Vector2( 78.4458, 52.5292 )
+rotation = -1.29119
+
+[node name="Bone2DLeftHand" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2DLeftShoulder/Bone2DLeftArm/Bone2DLeftLowerArm"]
+position = Vector2( 68.4166, 54.6523 )
+rotation = -1.29119
+scale = Vector2( 1, 1 )
+rest = Transform2D( 0.275977, -0.961164, 0.961164, 0.275977, 68.4166, 54.6523 )
+
+[node name="Bone2D2RightShoulder" type="Bone2D" parent="Player/RigidBody/Skeleton2D"]
+rest = Transform2D( 1, 0, 0, 1, 0, 0 )
+
+[node name="Bone2DRightArm" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2D2RightShoulder"]
+position = Vector2( -49.8924, -33.8477 )
+rotation = 0.720062
+rest = Transform2D( 0.751765, 0.659431, -0.659431, 0.751765, -49.8924, -33.8477 )
+__meta__ = {
+"_edit_bone_": true
+}
+
+[node name="Bone2DRightLowerArm" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2D2RightShoulder/Bone2DRightArm"]
+position = Vector2( 11.2833, 94.8271 )
+rotation = -1.29245
+rest = Transform2D( 0.274766, -0.961511, 0.961511, 0.274766, 11.2833, 94.8271 )
+__meta__ = {
+"_edit_bone_": true
+}
+
+[node name="Position2DRight" type="Position2D" parent="Player/RigidBody/Skeleton2D/Bone2D2RightShoulder/Bone2DRightArm/Bone2DRightLowerArm"]
+position = Vector2( 26.8108, 85.366 )
+rotation = -1.49012e-08
+
+[node name="Bone2DRightHand" type="Bone2D" parent="Player/RigidBody/Skeleton2D/Bone2D2RightShoulder/Bone2DRightArm/Bone2DRightLowerArm"]
+position = Vector2( 36.8972, 71.3041 )
+rotation = 0.572388
+rest = Transform2D( 0.84061, 0.541641, -0.541641, 0.84061, 36.8972, 71.3041 )
+__meta__ = {
+"_edit_bone_": true
+}
+
+[node name="Spear" type="RigidBody2D" parent="Player"]
+position = Vector2( 85.6421, 31.1731 )
+rotation = -1.5708
+physics_material_override = SubResource( 7 )
+linear_damp = 3.682
+angular_damp = 36.458
+
+[node name="SpearShaft" type="CollisionPolygon2D" parent="Player/Spear"]
+rotation = -0.0180954
+polygon = PoolVector2Array( -18.8815, 5.59585, 292.9, 0.976326, 301.682, -6.30719, 292.632, -14.1666, -19.1492, -9.54708 )
+
+[node name="RemoteTransformLeftHand" type="RemoteTransform2D" parent="Player/Spear"]
+position = Vector2( 106.5, -0.933467 )
+remote_path = NodePath("../../RigidBody/Skeleton2D/Bone2DLeftShoulder/Bone2DLeftArm/Bone2DLeftLowerArm/Bone2DLeftHand")
+
+[node name="RemoteTransformRightHand" type="RemoteTransform2D" parent="Player/Spear"]
+position = Vector2( 9.0527, -1.33719 )
+remote_path = NodePath("../../RigidBody/Skeleton2D/Bone2D2RightShoulder/Bone2DRightArm/Bone2DRightLowerArm/Bone2DRightHand")
+
+[node name="PinJoint2D2" type="PinJoint2D" parent="Player/Spear"]
+position = Vector2( 108.029, -4.25845 )
+node_a = NodePath("../../RigidBody")
+node_b = NodePath("../../Spear")
+bias = 0.095
+disable_collision = false
+softness = 0.5
+
+[node name="PinJoint2D" type="PinJoint2D" parent="Player/Spear"]
+position = Vector2( 6.87509, -3.145 )
+node_a = NodePath("../../RigidBody")
+node_b = NodePath("../../Spear")
+bias = 0.107
+disable_collision = false
+softness = 0.5
+
+[node name="SpearTip" type="CollisionPolygon2D" parent="Player/Spear"]
+rotation = -0.0133879
+polygon = PoolVector2Array( 322.195, 8.36217, 399.665, -9.98029, 320.232, -22.7207, 316.264, -7.0918 )
+
+[node name="SpearBlades" type="CollisionPolygon2D" parent="Player/Spear"]
+position = Vector2( 0, -0.707123 )
+rotation = -3.55672e-06
+polygon = PoolVector2Array( 310.247, 22.1969, 319.648, -12.0979, 308.605, -44.2546, 294.208, -11.1983 )
+
+[node name="Camera2D" type="Camera2D" parent="Player/Spear"]
+position = Vector2( 231.173, -85.6412 )
+rotation = 1.5708
+rotating = true
+current = true
+smoothing_enabled = true
+
+[node name="InverseKinematicLeftArm" type="Node" parent="Player"]
+script = ExtResource( 2 )
+origin_node = NodePath("../RigidBody/Skeleton2D/Bone2DLeftShoulder/Bone2DLeftArm")
+terminus_node = NodePath("../RigidBody/Skeleton2D/Bone2DLeftShoulder/Bone2DLeftArm/Bone2DLeftLowerArm/Position2DLeft")
+rotate_terminus = true
+joint_range_degrees = 180.0
+
+[node name="InverseKinematicRightArm" type="Node" parent="Player"]
+script = ExtResource( 2 )
+origin_node = NodePath("../RigidBody/Skeleton2D/Bone2D2RightShoulder/Bone2DRightArm")
+terminus_node = NodePath("../RigidBody/Skeleton2D/Bone2D2RightShoulder/Bone2DRightArm/Bone2DRightLowerArm/Position2DRight")
+rotate_terminus = true
+joint_range_degrees = 180.0
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+position = Vector2( 482.962, -487.358 )
+rotation = 0.822645
+angular_damp = 20.991
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+shape = SubResource( 5 )
+
+[node name="Sprite" type="Sprite" parent="RigidBody2D"]
+position = Vector2( 0, 30.2905 )
+texture = ExtResource( 5 )
+
+[node name="RigidBody2D2" type="RigidBody2D" parent="."]
+position = Vector2( 664.692, -345.986 )
+rotation = 1.64529
+scale = Vector2( 1, 1 )
+angular_damp = 20.991
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D2"]
+shape = SubResource( 5 )
+
+[node name="Sprite" type="Sprite" parent="RigidBody2D2"]
+position = Vector2( 0, 30.2905 )
+texture = ExtResource( 5 )
